@@ -7,10 +7,10 @@ services:
        - 80:80
        - 443:443
     volumes:
-      - ./traefik:/etc/nginx/certs
+      - ./certs:/etc/nginx/certs
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./my_proxy.conf:/etc/nginx/conf.d/my_proxy.conf
-      - ./traefik/dhparam.pem:/etc/nginx/dhparam/dhparam.pem
+      - ./certs/dhparam.pem:/etc/nginx/dhparam/dhparam.pem
   db:
     image: postgres
     environment:
@@ -53,5 +53,3 @@ services:
      - 8000
    environment:
      - VIRTUAL_HOST=whoami.local
-#.htpasswd admin
-#admin:$apr1$VptR0AmP$ndZaQNaZ/xOuKD31n7u08/
