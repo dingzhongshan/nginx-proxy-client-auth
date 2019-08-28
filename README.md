@@ -40,3 +40,4 @@
   * see example docker-compose.yml for configuring jwilder/nginx-proxy, change cert dir
   * see example my_proxy for configuring jwilder/nginx-proxy, change cert dir
   * make sure you have a dhparam.pem or jwilder/nginx-proxy will auto generate on startup
+  * make sure /etc/hosts and/or resolve.conf includes resolving 127.0.0.1 <host.local> for each virtual host
