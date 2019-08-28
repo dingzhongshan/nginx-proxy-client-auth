@@ -1,0 +1,57 @@
+version: "3.6"
+
+services:
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+       - 80:80
+       - 443:443
+    volumes:
+      - ./traefik:/etc/nginx/certs
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./my_proxy.conf:/etc/nginx/conf.d/my_proxy.conf
+      - ./traefik/dhparam.pem:/etc/nginx/dhparam/dhparam.pem
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_DB=brainstorm
+      - POSTGRES_DB_PASSWORD=password
+      - VIRTUAL_HOST=db.local
+    expose:
+      - 54321
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U root -d brainstorm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  brainstorm:
+    build: .
+    expose :
+      - 5000
+    depends_on:
+      - "db"
+    command: ["./wait-for-postgres.sh", "db", "python", "run.py"]
+    volumes:
+      - '.:/flask'
+    environment:
+        - VIRTUAL_HOST=brainstorm.local
+
+  adminer:
+    image: adminer:4.6.3-standalone
+    depends_on:
+      - "db"
+    expose:
+      - 8080
+    environment:
+      - VIRTUAL_HOST=adminer.local
+
+  whoami:
+   image: jwilder/whoami
+   expose:
+     - 8000
+   environment:
+     - VIRTUAL_HOST=whoami.local
+#.htpasswd admin
+#admin:$apr1$VptR0AmP$ndZaQNaZ/xOuKD31n7u08/
